@@ -1,0 +1,31 @@
+{
+  "name": "ohbug",
+  "version": "0.0.1",
+  "description": "js caught and report error",
+  "main": "dist/ohbug.js",
+  "scripts": {
+    "build": "rollup -c",
+    "lint": "eslint ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenyueban/ohbug.git"
+  },
+  "keywords": [
+    "debugger", "js", "bug"
+  ],
+  "author": "chenyueban",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chenyueban/ohbug/issues"
+  },
+  "homepage": "https://github.com/chenyueban/ohbug#readme",
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "rollup": "^0.66.6",
+    "rollup-plugin-terser": "^3.0.0"
+  }
+}
