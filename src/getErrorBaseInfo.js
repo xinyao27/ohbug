@@ -9,7 +9,7 @@ import { config } from './config';
  */
 function getErrorBaseInfo() {
   const date = new Date();
-  const time = `${date.getFullYear()}年${date.getMonth()}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒`;
+  const time = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒`;
   let result = {
     time,
     userAgent: window.navigator.userAgent,
