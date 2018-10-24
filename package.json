@@ -1,6 +1,6 @@
 {
   "name": "ohbug",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "js caught and report error",
   "main": "dist/ohbug.js",
   "scripts": {
@@ -13,7 +13,9 @@
     "url": "git+https://github.com/chenyueban/ohbug.git"
   },
   "keywords": [
-    "debugger", "js", "bug"
+    "debugger",
+    "js",
+    "bug"
   ],
   "author": "chenyueban",
   "license": "MIT",
