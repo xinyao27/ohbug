@@ -2,9 +2,10 @@
   "name": "ohbug",
   "version": "0.0.2",
   "description": "js caught and report error",
-  "main": "dist/ohbug.js",
+  "main": "dist/ohbug.min.js",
   "scripts": {
     "build": "rollup -c",
+    "build:compress": "rollup -c --compress",
     "lint": "eslint ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
