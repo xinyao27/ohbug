@@ -13,23 +13,6 @@
   const FETCH_ERROR = 'fetchError'; // fetch 错误
   const REPORT_ERROR = 'reportError'; // 主动上报的错误
 
-  let defaultConf = {
-    delay: 2000, // 错误处理间隔时间
-  };
-
-  function config(conf) {
-    if (conf) {
-      defaultConf = {
-        ...defaultConf,
-        ...conf,
-      };
-    }
-    return defaultConf;
-  }
-
-  // 储存所有报错信息
-  const errorList = [];
-
   /**
    * getErrorBaseInfo
    * 获取用户名、ID、时间戳、其他自定义信息等
@@ -46,10 +29,10 @@
       url: window.location.href,
       title: document.title,
     };
-    if (config().others) {
+    if (window.$OhbugConfig && window.$OhbugConfig.others) {
       result = {
         ...result,
-        ...config().others,
+        ...window.$OhbugConfig.others,
       };
     }
     return result;
@@ -94,11 +77,14 @@
    * @private
    */
   function report(data) {
-    if (config().report) config().report(data);
+    if (window.$OhbugConfig && window.$OhbugConfig.report) window.$OhbugConfig.report(data);
   }
 
   // 判断 dev prod 环境
   const isDev = window.location.host.indexOf('127.0.0.1') > -1 || window.location.host.indexOf('localhost') > -1;
+
+  // 储存所有报错信息
+  const errorList = [];
 
   /**
    * handleError
@@ -119,7 +105,7 @@
     const request = debounce(() => {
       print(errorList);
       !isDev && report(errorList);
-    }, config().delay);
+    }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
     errorList.length && request();
   }
 
@@ -223,66 +209,74 @@
 
   // 使用装饰器 用于单独捕获错误
   const caughtError = (target, name, descriptor) => {
-    if (typeof descriptor.value === 'function') {
-      /**
-       * 捕获 `class` 内方法错误
-       * class Math {
-       *    @log  // Decorator
-       *    plus(a, b) {
-       *      return a + b;
-       *    }
-       *  }
-       */
-      return {
-        ...descriptor,
-        value() {
-          try {
-            return descriptor.value && descriptor.value.apply(this, arguments);
-          } catch (e) {
-            // 此处可捕获到方法内的错误 上报错误
-            const message = {
-              type: CAUGHT_ERROR,
-              desc: {
-                method: name,
-                params: arguments,
-                error: e.stack || e,
-              },
-            };
-            handleError(message);
-            throw e;
-          }
-        },
-      };
-    }
-    if (typeof descriptor.initializer === 'function') {
-      /**
-       * 捕获 `class` 内 `arrow function method` 错误
-       * class Math {
-       *    @log  // Decorator
-       *    plus = (a, b) => {
-       *      return a + b;
-       *    }
-       *  }
-       */
-      return {
-        enumerable: true,
-        configurable: true,
-        get() {
-          // `arrow function method` 由于是箭头函数没有 `arguments` 所以获取不到参数
-          // 捕获不到异常 只能靠全局捕获 建议不要使用 `arrow function method`
-          return descriptor.initializer && descriptor.initializer.apply(this);
-        },
-      };
+    if (window.$OhbugAuth) {
+      if (typeof descriptor.value === 'function') {
+        /**
+         * 捕获 `class` 内方法错误
+         * class Math {
+         *    @log  // Decorator
+         *    plus(a, b) {
+         *      return a + b;
+         *    }
+         *  }
+         */
+        return {
+          ...descriptor,
+          value() {
+            try {
+              return descriptor.value && descriptor.value.apply(this, arguments);
+            } catch (e) {
+              // 此处可捕获到方法内的错误 上报错误
+              const message = {
+                type: CAUGHT_ERROR,
+                desc: {
+                  method: name,
+                  params: arguments,
+                  error: e.stack || e,
+                },
+              };
+              handleError(message);
+              throw e;
+            }
+          },
+        };
+      }
+      if (typeof descriptor.initializer === 'function') {
+        /**
+         * 捕获 `class` 内 `arrow function method` 错误
+         * class Math {
+         *    @log  // Decorator
+         *    plus = (a, b) => {
+         *      return a + b;
+         *    }
+         *  }
+         */
+        return {
+          enumerable: true,
+          configurable: true,
+          get() {
+            // `arrow function method` 由于是箭头函数没有 `arguments` 所以获取不到参数
+            // 捕获不到异常 只能靠全局捕获 建议不要使用 `arrow function method`
+            return descriptor.initializer && descriptor.initializer.apply(this);
+          },
+        };
+      }
+    } else {
+      console.error('检测到未执行 Ohbug.init()');
     }
   };
 
   // 用于上报自定义错误
   const reportError = (error) => {
-    const message = {
-      type: REPORT_ERROR,
-      desc: error,
-    };
-    handleError(message);
+    if (window.$OhbugAuth) {
+      const message = {
+        type: REPORT_ERROR,
+        desc: error,
+      };
+      handleError(message);
+    } else {
+      console.error('检测到未执行 Ohbug.init()');
+    }
   };
 
   /**
@@ -379,46 +373,58 @@
     }
   }
 
-  /**
-   * @chenyueban
-   * v0.0.1
-   */
+  function privateInit() {
+    /**
+     * 可捕获语法错误和网络错误 无法捕获 Promise 错误
+     * @param {String}  msg    错误信息
+     * @param {String}  url    出错文件
+     * @param {Number}  row    行号
+     * @param {Number}  col    列号
+     * @param {Object}  error  错误详细信息
+     */
+    window.addEventListener && window.addEventListener('error', (e) => {
+      getError({
+        type: 'default',
+        e,
+      });
+    }, true);
+
+    /**
+     * 可捕获 Promise 错误
+     * react render 内发生 `Cannot read property 'xxx' of undefined` 可从此处捕获到
+     */
+    window.addEventListener && window.addEventListener('unhandledrejection', (e) => {
+      e.preventDefault();
+      getError({
+        type: 'promise',
+        e,
+      });
+    }, true);
+
+    // ajax/fetch Error
+    getHttpRequestError();
+  }
 
   function Ohbug() {
   }
 
   Ohbug.init = function (conf) {
-    if (conf) config(conf);
     if (window) {
-      /**
-       * 可捕获语法错误和网络错误 无法捕获 Promise 错误
-       * @param {String}  msg    错误信息
-       * @param {String}  url    出错文件
-       * @param {Number}  row    行号
-       * @param {Number}  col    列号
-       * @param {Object}  error  错误详细信息
-       */
-      window.addEventListener && window.addEventListener('error', (e) => {
-        getError({
-          type: 'default',
-          e,
-        });
-      }, true);
-
-      /**
-       * 可捕获 Promise 错误
-       * react render 内发生 `Cannot read property 'xxx' of undefined` 可从此处捕获到
-       */
-      window.addEventListener && window.addEventListener('unhandledrejection', (e) => {
-        e.preventDefault();
-        getError({
-          type: 'promise',
-          e,
-        });
-      }, true);
-
-      // ajax/fetch Error
-      getHttpRequestError();
+      window.$OhbugAuth = true;
+      if (!window.$OhbugConfig) {
+        window.$OhbugConfig = {
+          delay: 2000, // 错误处理间隔时间
+        };
+      }
+      if (conf) {
+        window.$OhbugConfig = {
+          ...window.$OhbugConfig,
+          ...conf,
+        };
+      }
+      if (window.$OhbugAuth) privateInit();
+    } else {
+      console.error('检测到当前环境不支持 Ohbug！');
     }
   };
 

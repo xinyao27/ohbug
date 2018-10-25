@@ -108,66 +108,74 @@ function getError({ type, e }) {
 
 // 使用装饰器 用于单独捕获错误
 const caughtError = (target, name, descriptor) => {
-  if (typeof descriptor.value === 'function') {
-    /**
-     * 捕获 `class` 内方法错误
-     * class Math {
-     *    @log  // Decorator
-     *    plus(a, b) {
-     *      return a + b;
-     *    }
-     *  }
-     */
-    return {
-      ...descriptor,
-      value() {
-        try {
-          return descriptor.value && descriptor.value.apply(this, arguments);
-        } catch (e) {
-          // 此处可捕获到方法内的错误 上报错误
-          const message = {
-            type: CAUGHT_ERROR,
-            desc: {
-              method: name,
-              params: arguments,
-              error: e.stack || e,
-            },
-          };
-          handleError(message);
-          throw e;
-        }
-      },
-    };
-  }
-  if (typeof descriptor.initializer === 'function') {
-    /**
-     * 捕获 `class` 内 `arrow function method` 错误
-     * class Math {
-     *    @log  // Decorator
-     *    plus = (a, b) => {
-     *      return a + b;
-     *    }
-     *  }
-     */
-    return {
-      enumerable: true,
-      configurable: true,
-      get() {
-        // `arrow function method` 由于是箭头函数没有 `arguments` 所以获取不到参数
-        // 捕获不到异常 只能靠全局捕获 建议不要使用 `arrow function method`
-        return descriptor.initializer && descriptor.initializer.apply(this);
-      },
-    };
+  if (window.$OhbugAuth) {
+    if (typeof descriptor.value === 'function') {
+      /**
+       * 捕获 `class` 内方法错误
+       * class Math {
+       *    @log  // Decorator
+       *    plus(a, b) {
+       *      return a + b;
+       *    }
+       *  }
+       */
+      return {
+        ...descriptor,
+        value() {
+          try {
+            return descriptor.value && descriptor.value.apply(this, arguments);
+          } catch (e) {
+            // 此处可捕获到方法内的错误 上报错误
+            const message = {
+              type: CAUGHT_ERROR,
+              desc: {
+                method: name,
+                params: arguments,
+                error: e.stack || e,
+              },
+            };
+            handleError(message);
+            throw e;
+          }
+        },
+      };
+    }
+    if (typeof descriptor.initializer === 'function') {
+      /**
+       * 捕获 `class` 内 `arrow function method` 错误
+       * class Math {
+       *    @log  // Decorator
+       *    plus = (a, b) => {
+       *      return a + b;
+       *    }
+       *  }
+       */
+      return {
+        enumerable: true,
+        configurable: true,
+        get() {
+          // `arrow function method` 由于是箭头函数没有 `arguments` 所以获取不到参数
+          // 捕获不到异常 只能靠全局捕获 建议不要使用 `arrow function method`
+          return descriptor.initializer && descriptor.initializer.apply(this);
+        },
+      };
+    }
+  } else {
+    console.error('检测到未执行 Ohbug.init()');
   }
 };
 
 // 用于上报自定义错误
 const reportError = (error) => {
-  const message = {
-    type: REPORT_ERROR,
-    desc: error,
-  };
-  handleError(message);
+  if (window.$OhbugAuth) {
+    const message = {
+      type: REPORT_ERROR,
+      desc: error,
+    };
+    handleError(message);
+  } else {
+    console.error('检测到未执行 Ohbug.init()');
+  }
 };
 
 export {

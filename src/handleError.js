@@ -1,10 +1,12 @@
 import getErrorBaseInfo from './getErrorBaseInfo';
 import { debounce, print } from './util';
 import report from './report';
-import { config, errorList } from './config';
 
 // 判断 dev prod 环境
 const isDev = window.location.host.indexOf('127.0.0.1') > -1 || window.location.host.indexOf('localhost') > -1;
+
+// 储存所有报错信息
+const errorList = [];
 
 /**
  * handleError
@@ -25,7 +27,7 @@ function handleError(error) {
   const request = debounce(() => {
     print(errorList);
     !isDev && report(errorList);
-  }, config().delay);
+  }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
   errorList.length && request();
 }
 

@@ -1,5 +1,3 @@
-import { config } from './config';
-
 /**
  * getErrorBaseInfo
  * 获取用户名、ID、时间戳、其他自定义信息等
@@ -16,10 +14,10 @@ function getErrorBaseInfo() {
     url: window.location.href,
     title: document.title,
   };
-  if (config().others) {
+  if (window.$OhbugConfig && window.$OhbugConfig.others) {
     result = {
       ...result,
-      ...config().others,
+      ...window.$OhbugConfig.others,
     };
   }
   return result;

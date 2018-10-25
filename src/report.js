@@ -1,5 +1,3 @@
-import { config } from './config';
-
 /**
  * request
  * 上报错误
@@ -8,7 +6,7 @@ import { config } from './config';
  * @private
  */
 function report(data) {
-  if (config().report) config().report(data);
+  if (window.$OhbugConfig && window.$OhbugConfig.report) window.$OhbugConfig.report(data);
 }
 
 export default report;
