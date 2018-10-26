@@ -1,11 +1,11 @@
 /**
- * getErrorBaseInfo
+ * getBaseInfo
  * 获取用户名、ID、时间戳、其他自定义信息等
  *
  * @returns {Object}
  * @private
  */
-function getErrorBaseInfo() {
+function getBaseInfo() {
   const date = new Date();
   const time = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒`;
   let result = {
@@ -23,4 +23,4 @@ function getErrorBaseInfo() {
   return result;
 }
 
-export default getErrorBaseInfo;
+export default getBaseInfo;

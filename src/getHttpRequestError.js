@@ -2,7 +2,7 @@ import {
   AJAX_ERROR,
   FETCH_ERROR,
 } from './constant';
-import getErrorBaseInfo from './getErrorBaseInfo';
+import getBaseInfo from './getBaseInfo';
 import handleError from './handleError';
 
 /**
@@ -34,7 +34,7 @@ function getHttpRequestError() {
 
         window.XMLHttpRequest.prototype.send = function () {
           const message = {
-            ...getErrorBaseInfo(),
+            ...getBaseInfo(),
             type: AJAX_ERROR,
             req: {
               url: that.reqUrl,
@@ -72,7 +72,7 @@ function getHttpRequestError() {
             FETCH.backup.apply(this, arguments)
               .then((res) => {
                 const message = {
-                  ...getErrorBaseInfo(),
+                  ...getBaseInfo(),
                   type: FETCH_ERROR,
                   req: {
                     url,

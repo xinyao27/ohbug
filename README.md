@@ -42,11 +42,11 @@
 1.安装
 
 ```sh
-npm install ohbug --save-dev
+npm install ohbug --save
 ```
 如果想用 `yarn`
 ```sh
-yarn add ohbug --dev
+yarn add ohbug
 ```
 
 2.在文件中添加
@@ -91,7 +91,7 @@ class Test extends React.Component {
 }
 ```
 
-针对一些不能使用装饰器或自定义信息 使用 `reportError`
+针对一些不能使用装饰器或自定义信息使用 `reportError`
 
 ```javascript
 import { reportError } from 'ohbug';
@@ -135,7 +135,7 @@ Ohbug.init({
 });
 ```
 
-| key | description | default |
+| key | description | default |
 | :------: | :------: | :------: |
 | delay | 错误处理间隔时间 | 2000 |
 | report | 上传错误函数 | null |
@@ -144,7 +144,7 @@ Ohbug.init({
 
 ## 错误类型
 
-| type | description |
+| type | description |
 | :------: | :------: |
 | caughtError | 调用 caughtError 装饰器主动捕获的错误 |
 | uncaughtError | 意料之外的错误 |

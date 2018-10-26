@@ -1,4 +1,4 @@
-import getErrorBaseInfo from './getErrorBaseInfo';
+import getBaseInfo from './getBaseInfo';
 import { debounce, print } from './util';
 import report from './report';
 
@@ -20,7 +20,7 @@ function handleError(error) {
   print(error);
 
   errorList.push({
-    ...getErrorBaseInfo(),
+    ...getBaseInfo(),
     ...error,
   });
 
