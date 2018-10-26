@@ -14,7 +14,11 @@
 2. 资源加载错误
 3. HTTP请求错误
 4. 未catch处理的Promise错误
-5. ~~捕获websocket错误~~ TODO
+
+## Todo
+1. 捕获websocket错误
+2. 设置采集率
+3. sourcemap定位压缩代码具体错误位置
 
 ## 原理
 
