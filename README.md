@@ -138,8 +138,9 @@ Ohbug.init({
 | key | description | default |
 | :------: | :------: | :------: |
 | delay | 错误处理间隔时间 | 2000 |
-| report | 资源加载错误 | null |
+| report | 上传错误函数 | null |
 | others | 自定义信息 | null |
+| enabledDev | 开发环境下上传错误 | false |
 
 ## 错误类型
 

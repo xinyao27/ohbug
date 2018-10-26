@@ -42,6 +42,7 @@ Ohbug.init = function (conf) {
     if (!window.$OhbugConfig) {
       window.$OhbugConfig = {
         delay: 2000, // 错误处理间隔时间
+        enabledDev: false, // 开发环境下上传错误
       };
     }
     if (conf) {
