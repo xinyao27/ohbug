@@ -26,13 +26,17 @@ function handleError(error) {
 
   // 短时间内多次触发 只发送最终结果
   const request = debounce(() => {
-    print(errorList);
-    if (isDev) {
-      if (window.$OhbugConfig && window.$OhbugConfig.enabledDev) {
+    try {
+      print(errorList);
+      if (isDev) {
+        if (window.$OhbugConfig && window.$OhbugConfig.enabledDev) {
+          report(errorList);
+        }
+      } else {
         report(errorList);
       }
-    } else {
-      report(errorList);
+    } catch (e) {
+      print(`日志上报出现异常错误 errorInfo:${e}`);
     }
   }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
   errorList.length && request();

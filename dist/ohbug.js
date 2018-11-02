@@ -14,13 +14,13 @@
   const REPORT_ERROR = 'reportError'; // 主动上报的错误
 
   /**
-   * getErrorBaseInfo
+   * getBaseInfo
    * 获取用户名、ID、时间戳、其他自定义信息等
    *
    * @returns {Object}
    * @private
    */
-  function getErrorBaseInfo() {
+  function getBaseInfo() {
     const date = new Date();
     const time = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒`;
     let result = {
@@ -77,7 +77,11 @@
    * @private
    */
   function report(data) {
-    if (window.$OhbugConfig && window.$OhbugConfig.report) window.$OhbugConfig.report(data);
+    try {
+      if (window.$OhbugConfig && window.$OhbugConfig.report) window.$OhbugConfig.report(data);
+    } catch (e) {
+      print(`发送日志失败 errorInfo:${e}`);
+    }
   }
 
   // 判断 dev prod 环境
@@ -98,19 +102,23 @@
     print(error);
 
     errorList.push({
-      ...getErrorBaseInfo(),
+      ...getBaseInfo(),
       ...error,
     });
 
     // 短时间内多次触发 只发送最终结果
     const request = debounce(() => {
-      print(errorList);
-      if (isDev) {
-        if (window.$OhbugConfig && window.$OhbugConfig.enabledDev) {
+      try {
+        print(errorList);
+        if (isDev) {
+          if (window.$OhbugConfig && window.$OhbugConfig.enabledDev) {
+            report(errorList);
+          }
+        } else {
           report(errorList);
         }
-      } else {
-        report(errorList);
+      } catch (e) {
+        print(`日志上报出现异常错误 errorInfo:${e}`);
       }
     }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
     errorList.length && request();
@@ -315,7 +323,7 @@
 
           window.XMLHttpRequest.prototype.send = function () {
             const message = {
-              ...getErrorBaseInfo(),
+              ...getBaseInfo(),
               type: AJAX_ERROR,
               req: {
                 url: that.reqUrl,
@@ -353,7 +361,7 @@
               FETCH.backup.apply(this, arguments)
                 .then((res) => {
                   const message = {
-                    ...getErrorBaseInfo(),
+                    ...getBaseInfo(),
                     type: FETCH_ERROR,
                     req: {
                       url,
