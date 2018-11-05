@@ -379,7 +379,7 @@
                 message.res.response = this.response;
                 message.res.status = this.status;
                 message.res.statusText = this.statusText;
-                const isIgnore = ignore.filter(url => that.reqUrl.indexOf(url) > -1);
+                const isIgnore = ignore.filter(u => that.reqUrl.indexOf(u) > -1);
                 (!this.status || this.status >= 400) && !isIgnore.length && handleError(message);
               }
             });
@@ -413,7 +413,8 @@
                       // fetch 只能通过 res.json() 获取返回值且只能调用一次 此处不能获取返回值
                     },
                   };
-                  (!res.status || res.status >= 400) && handleError(message);
+                  const isIgnore = ignore.filter(u => url.indexOf(u) > -1);
+                  (!res.status || res.status >= 400) && !isIgnore.length && handleError(message);
                   return res;
                 })
                 .catch((err) => {
