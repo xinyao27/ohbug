@@ -145,7 +145,7 @@ Ohbug.init({
 | report | 上传错误函数 | function | null |
 | others | 自定义信息 | object | null |
 | enabledDev | 开发环境下上传错误 | boolean | false |
-| maxError | 发送日志请求连续出错的最大次数 超过则不再发送请求 | number | 20 | 
+| maxError | 发送日志请求连续出错的最大次数 超过则不再发送请求 | number | 10 | 
 | mode | 短信发送模式 ('immediately': 立即发送 'beforeunload': 页面注销前发送) | string | 'immediately' |
 
 ## 错误类型
