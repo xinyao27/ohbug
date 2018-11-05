@@ -36,13 +36,11 @@ function privateInit() {
 
   /**
    * 文档卸载前执行发送日志操作
-   * 默认的发送日志方式
    */
   if (window.$OhbugConfig && (window.$OhbugConfig.mode === 'beforeunload')) {
-    window.addEventListener && window.addEventListener('beforeunload', () => {
+    window.addEventListener && window.addEventListener('unload', () => {
       if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {
         report(errorList);
-        return '确定？';
       }
     });
   }
