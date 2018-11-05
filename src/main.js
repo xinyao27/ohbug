@@ -56,9 +56,11 @@ Ohbug.init = function (conf) {
       // default config
       window.$OhbugConfig = {
         delay: 2000, // 错误处理间隔时间
+        report() {}, // 上报错误的方法
         enabledDev: false, // 开发环境下上传错误
         maxError: 10, // 最大上传错误数量
         mode: 'immediately', // 短信发送模式 immediately 立即发送 beforeunload 页面注销前发送
+        ignore: [], // 忽略指定错误 目前只支持忽略 HTTP 请求错误
       };
     }
     if (conf) {
