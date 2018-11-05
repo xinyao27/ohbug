@@ -155,7 +155,7 @@ Ohbug.init({
 
 设置为 `beforeunload` 时，会在卸载当前页面时上报，可能存在用户关闭或切换页面导致漏报问题。
 
-常见的解决方案为发送同步 `ajax` 请求(会导致页面卡顿) 或 使用 `navigator.sendBeacon()` 异步上报(不支持 GET)，两种情况都存在弊端 实际生产环境视情况而定。
+常见的解决方案为发送同步 `ajax` 请求(会导致页面卡顿) 或 使用 `navigator.sendBeacon()` 异步上报(不支持 GET)，两种情况都存在弊端 实际生产环境视情况而定。
 ```javascript
 function report(data) {
   var xhr = new XMLHttpRequest();
@@ -176,7 +176,7 @@ Ohbug.init({
 ```
 
 ### `ignore` 属性
-Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
+Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
 
 使用场景: 
 1. 可能频繁出错或不需上报的api。
