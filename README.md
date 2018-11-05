@@ -133,7 +133,6 @@ function report(data) {
   ajax('url', JSON.stringify(data))
 }
 Ohbug.init({
-  delay: 2000,
   report,
   others,
 });
@@ -141,13 +140,47 @@ Ohbug.init({
 
 | key | description | type | default |
 | :------: | :------: | :------: | :------: |
-| delay | 错误处理间隔时间 | number | 2000 |
 | report | 上传错误函数 | function | null |
 | others | 自定义信息 | object | null |
-| enabledDev | 开发环境下上传错误 | boolean | false |
+| enabledDev | 开发环境下上传错误 (目前是判断当前 url 中是否含有 `127.0.0.1` / `localhost` 确定是否为本地) | boolean | false |
 | maxError | 发送日志请求连续出错的最大次数 超过则不再发送请求 | number | 10 | 
 | mode | 短信发送模式 ('immediately': 立即发送 'beforeunload': 页面注销前发送) | string | 'immediately' |
+| delay | 错误处理间隔时间 | number | 2000 |
 | ignore | 忽略指定错误 目前只支持忽略 HTTP 请求错误 | array | [] |
+
+## 注意
+
+### `mode` 属性
+设置为 `immediately` 时，`delay` 时间内发生的错误将会统一收集并上报
+
+设置为 `beforeunload` 时，会在卸载当前页面时上报，可能存在用户关闭或切换页面导致漏报问题。
+
+常见的解决方案为发送同步 `ajax` 请求(会导致页面卡顿) 或 使用 `navigator.sendBeacon()` 异步上报(不支持 GET)，两种情况都存在弊端 实际生产环境视情况而定。
+```javascript
+function report(data) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "/log", false); // false 表示同步
+  xhr.send(data);
+}
+Ohbug.init({
+  report,
+});
+```
+```javascript
+function report(data) {
+  navigator.sendBeacon("/log", data); // 默认发送 POST 请求
+}
+Ohbug.init({
+  report,
+});
+```
+
+### `ignore` 属性
+Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
+
+使用场景: 
+1. 可能频繁出错或不需上报的api。
+2. 由于上报请求完全自定义，一旦上报请求发生错误，Ohbug无法判断错误来源，会导致无限循环上报，此时将上报的 url 添加入 `ignore` 数组内，忽略上报请求的错误。
 
 ## 错误类型
 
