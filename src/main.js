@@ -1,5 +1,7 @@
 import { getError, caughtError, reportError } from './getError';
 import getHttpRequestError from './getHttpRequestError';
+import report from './report';
+import { errorList } from './handleError';
 
 function privateInit() {
   /**
@@ -31,6 +33,19 @@ function privateInit() {
 
   // ajax/fetch Error
   getHttpRequestError();
+
+  /**
+   * 文档卸载前执行发送日志操作
+   * 默认的发送日志方式
+   */
+  if (window.$OhbugConfig && (window.$OhbugConfig.mode === 'beforeunload')) {
+    window.addEventListener && window.addEventListener('beforeunload', () => {
+      if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {
+        report(errorList);
+        return '确定？';
+      }
+    });
+  }
 }
 
 function Ohbug() {
@@ -40,9 +55,12 @@ Ohbug.init = function (conf) {
   if (window) {
     window.$OhbugAuth = true;
     if (!window.$OhbugConfig) {
+      // default config
       window.$OhbugConfig = {
         delay: 2000, // 错误处理间隔时间
         enabledDev: false, // 开发环境下上传错误
+        maxError: 20, // 最大上传错误数量
+        mode: 'immediately', // 短信发送模式 immediately 立即发送 beforeunload 页面注销前发送
       };
     }
     if (conf) {
@@ -51,6 +69,7 @@ Ohbug.init = function (conf) {
         ...conf,
       };
     }
+
     if (window.$OhbugAuth) privateInit();
   } else {
     console.error('检测到当前环境不支持 Ohbug！');

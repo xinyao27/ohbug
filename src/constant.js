@@ -1,3 +1,8 @@
+/**
+ * constant
+ * 管理错误类型
+ */
+
 export const CAUGHT_ERROR = 'caughtError'; // 调用 caughtError 装饰器主动捕获的错误
 export const UNCAUGHT_ERROR = 'uncaughtError'; // 意料之外的错误
 export const RESOURCE_ERROR = 'resourceError'; // 资源加载错误

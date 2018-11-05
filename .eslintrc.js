@@ -10,5 +10,7 @@ module.exports = {
     'prefer-destructuring': 0,
     'import/prefer-default-export': 0,
     'import/no-cycle': 0,
+    'no-console': ['error', { allow: ['error'] }],
+    'func-names': 0,
   }
 };

@@ -1,3 +1,8 @@
+/**
+ * getError
+ * 捕获错误 分为自动捕获和手动捕获
+ */
+
 import {
   UNCAUGHT_ERROR,
   RESOURCE_ERROR,

@@ -1,13 +1,20 @@
+/**
+ * handleError
+ * 收集并 print 错误
+ */
+
 import getBaseInfo from './getBaseInfo';
 import { debounce, print } from './util';
 import report from './report';
 
-// 判断 dev prod 环境
-const reg = /^(https?:\/\/)?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(.+)?$/;
-const isDev = reg.test(window.location.host) || window.location.host.indexOf('localhost') > -1;
-
 // 储存所有报错信息
-const errorList = [];
+export const errorList = [];
+
+// 发生错误一段时间后发送请求 防抖控制指定时间内只发送一次请求
+const request = debounce(() => {
+  print(errorList);
+  report(errorList);
+}, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
 
 /**
  * handleError
@@ -24,22 +31,14 @@ function handleError(error) {
     ...error,
   });
 
-  // 短时间内多次触发 只发送最终结果
-  const request = debounce(() => {
-    try {
-      print(errorList);
-      if (isDev) {
-        if (window.$OhbugConfig && window.$OhbugConfig.enabledDev) {
-          report(errorList);
-        }
-      } else {
-        report(errorList);
-      }
-    } catch (e) {
-      print(`日志上报出现异常错误 errorInfo:${e}`);
-    }
-  }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
-  errorList.length && request();
+  // 控制错误数量在指定条数以内
+  const config = window.$OhbugConfig;
+  if (
+    config && (config.mode === 'immediately' || !config.mode)
+    && errorList.length && errorList.length <= config.maxError
+  ) {
+    request();
+  }
 }
 
 export default handleError;

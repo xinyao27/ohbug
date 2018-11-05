@@ -139,12 +139,14 @@ Ohbug.init({
 });
 ```
 
-| key | description | default |
-| :------: | :------: | :------: |
-| delay | 错误处理间隔时间 | 2000 |
-| report | 上传错误函数 | null |
-| others | 自定义信息 | null |
-| enabledDev | 开发环境下上传错误 | false |
+| key | description | type | default |
+| :------: | :------: | :------: | :------: |
+| delay | 错误处理间隔时间 | number | 2000 |
+| report | 上传错误函数 | function | null |
+| others | 自定义信息 | object | null |
+| enabledDev | 开发环境下上传错误 | boolean | false |
+| maxError | 发送日志请求连续出错的最大次数 超过则不再发送请求 | number | 20 | 
+| mode | 短信发送模式 ('immediately': 立即发送 'beforeunload': 页面注销前发送) | string | 'immediately' |
 
 ## 错误类型
 

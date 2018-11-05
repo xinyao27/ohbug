@@ -4,6 +4,11 @@
   (global.Ohbug = factory());
 }(this, (function () { 'use strict';
 
+  /**
+   * constant
+   * 管理错误类型
+   */
+
   const CAUGHT_ERROR = 'caughtError'; // 调用 caughtError 装饰器主动捕获的错误
   const UNCAUGHT_ERROR = 'uncaughtError'; // 意料之外的错误
   const RESOURCE_ERROR = 'resourceError'; // 资源加载错误
@@ -15,12 +20,18 @@
 
   /**
    * getBaseInfo
+   * 获取信息
+   */
+
+  /**
+   * getBaseInfo
    * 获取用户名、ID、时间戳、其他自定义信息等
    *
    * @returns {Object}
    * @private
    */
   function getBaseInfo() {
+    const config = window.$OhbugConfig;
     const date = new Date();
     const time = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒`;
     let result = {
@@ -29,10 +40,10 @@
       url: window.location.href,
       title: document.title,
     };
-    if (window.$OhbugConfig && window.$OhbugConfig.others) {
+    if (config && config.others) {
       result = {
         ...result,
-        ...window.$OhbugConfig.others,
+        ...config.others,
       };
     }
     return result;
@@ -66,8 +77,17 @@
       style: 'background: #d9634d; color: #fff; padding: 2px 4px; border-radius: 2px',
     };
 
-    console.log(`%c${LOG_ERROR.msg}`, LOG_ERROR.style, info);
+    console.log(`%c${LOG_ERROR.msg}`, LOG_ERROR.style, info);// eslint-disable-line
   }
+
+  /**
+   * report
+   * 封装上报错误
+   */
+
+  // 判断 dev prod 环境
+  const reg = /^(https?:\/\/)?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(.+)?$/;
+  const isDev = reg.test(window.location.host) || window.location.host.indexOf('localhost') > -1;
 
   /**
    * request
@@ -78,18 +98,32 @@
    */
   function report(data) {
     try {
-      if (window.$OhbugConfig && window.$OhbugConfig.report) window.$OhbugConfig.report(data);
+      const config = window.$OhbugConfig;
+      if (isDev) {
+        if (config && config.enabledDev && config.report) {
+          config.report(data);
+        }
+      } else {
+        config && config.report && config.report(data);
+      }
     } catch (e) {
       print(`发送日志失败 errorInfo:${e}`);
     }
   }
 
-  // 判断 dev prod 环境
-  const reg = /^(https?:\/\/)?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(.+)?$/;
-  const isDev = reg.test(window.location.host) || window.location.host.indexOf('localhost') > -1;
+  /**
+   * handleError
+   * 收集并 print 错误
+   */
 
   // 储存所有报错信息
   const errorList = [];
+
+  // 发生错误一段时间后发送请求 防抖控制指定时间内只发送一次请求
+  const request = debounce(() => {
+    print(errorList);
+    report(errorList);
+  }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
 
   /**
    * handleError
@@ -106,23 +140,20 @@
       ...error,
     });
 
-    // 短时间内多次触发 只发送最终结果
-    const request = debounce(() => {
-      try {
-        print(errorList);
-        if (isDev) {
-          if (window.$OhbugConfig && window.$OhbugConfig.enabledDev) {
-            report(errorList);
-          }
-        } else {
-          report(errorList);
-        }
-      } catch (e) {
-        print(`日志上报出现异常错误 errorInfo:${e}`);
-      }
-    }, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
-    errorList.length && request();
+    // 控制错误数量在指定条数以内
+    const config = window.$OhbugConfig;
+    if (
+      config && (config.mode === 'immediately' || !config.mode)
+      && errorList.length && errorList.length <= config.maxError
+    ) {
+      request();
+    }
   }
+
+  /**
+   * getError
+   * 捕获错误 分为自动捕获和手动捕获
+   */
 
   /**
    * getError
@@ -295,6 +326,11 @@
   };
 
   /**
+   * getHTTPRequestError
+   * 捕获 HTTP 请求错误
+   */
+
+  /**
    * getHttpRequestError
    * ajax/fetch Error
    *
@@ -418,6 +454,19 @@
 
     // ajax/fetch Error
     getHttpRequestError();
+
+    /**
+     * 文档卸载前执行发送日志操作
+     * 默认的发送日志方式
+     */
+    if (window.$OhbugConfig && (window.$OhbugConfig.mode === 'beforeunload')) {
+      window.addEventListener && window.addEventListener('beforeunload', () => {
+        if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {
+          report(errorList);
+          return '确定？';
+        }
+      });
+    }
   }
 
   function Ohbug() {
@@ -427,9 +476,12 @@
     if (window) {
       window.$OhbugAuth = true;
       if (!window.$OhbugConfig) {
+        // default config
         window.$OhbugConfig = {
           delay: 2000, // 错误处理间隔时间
           enabledDev: false, // 开发环境下上传错误
+          maxError: 20, // 最大上传错误数量
+          mode: 'immediately', // 短信发送模式 immediately 立即发送 beforeunload 页面注销前发送
         };
       }
       if (conf) {
@@ -438,6 +490,7 @@
           ...conf,
         };
       }
+
       if (window.$OhbugAuth) privateInit();
     } else {
       console.error('检测到当前环境不支持 Ohbug！');

@@ -26,7 +26,7 @@ function print(info) {
     style: 'background: #d9634d; color: #fff; padding: 2px 4px; border-radius: 2px',
   };
 
-  console.log(`%c${LOG_ERROR.msg}`, LOG_ERROR.style, info);
+  console.log(`%c${LOG_ERROR.msg}`, LOG_ERROR.style, info);// eslint-disable-line
 }
 
 export {
