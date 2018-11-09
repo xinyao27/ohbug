@@ -19,6 +19,7 @@ function getBaseInfo() {
     userAgent: window.navigator.userAgent,
     url: window.location.href,
     title: document.title,
+    preUrl: document.referrer && document.referrer !== window.location.href ? document.referrer : '',
   };
   if (config && config.others) {
     result = {
