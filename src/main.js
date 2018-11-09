@@ -34,9 +34,7 @@ function privateInit() {
   // ajax/fetch Error
   getHttpRequestError();
 
-  /**
-   * 文档卸载前执行发送日志操作
-   */
+  // 文档卸载前执行发送日志操作
   if (window.$OhbugConfig && (window.$OhbugConfig.mode === 'beforeunload')) {
     window.addEventListener && window.addEventListener('unload', () => {
       if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {

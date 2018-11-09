@@ -38,6 +38,8 @@ todo...
 
 - 通过 `window.addEventListener`，可捕获 `JavaScript` 执行错误，资源加载错误，未catch处理的Promise错误
 - 通过改写 `XMLHttpRequest` / `fetch` 实现监听 `HTTP` 请求错误
+- 页面性能时间
+![image](https://segmentfault.com/img/remote/1460000010209590)
 
 ## 使用
 

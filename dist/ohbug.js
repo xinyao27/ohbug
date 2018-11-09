@@ -71,13 +71,27 @@
     };
   }
 
-  function print(info) {
-    const LOG_ERROR = {
-      msg: 'error',
-      style: 'background: #d9634d; color: #fff; padding: 2px 4px; border-radius: 2px',
-    };
-
-    console.log(`%c${LOG_ERROR.msg}`, LOG_ERROR.style, info);// eslint-disable-line
+  function print(info, type = 2) {
+    const list = [
+      {
+        type: 0,
+        msg: 'log',
+        style: 'background: #e4f1eb; color: #fff; padding: 2px 4px; border-radius: 2px',
+      },
+      {
+        type: 1,
+        msg: 'info',
+        style: 'background: #007fff; color: #fff; padding: 2px 4px; border-radius: 2px',
+      },
+      {
+        type: 2,
+        msg: 'error',
+        style: 'background: #d9634d; color: #fff; padding: 2px 4px; border-radius: 2px',
+      },
+    ];
+    list.forEach((item) => {
+      type === item.type && console.log(`%c${item.msg}`, item.style, info);// eslint-disable-line
+    });
   }
 
   /**
@@ -428,6 +442,94 @@
     }
   }
 
+  /**
+   * getPerformance
+   * 获取页面性能信息
+   */
+
+  function getPerformance() {
+    try {
+      if (window) {
+        if (!window.performance) return new Error('performance is not supported');
+        const { timing } = window.performance;
+        const {
+          connectEnd,
+          connectStart,
+          domComplete,
+          domContentLoadedEventEnd,
+          domContentLoadedEventStart,
+          domInteractive,
+          domLoading,
+          domainLookupEnd,
+          domainLookupStart,
+          fetchStart,
+          loadEventEnd,
+          loadEventStart,
+          navigationStart,
+          redirectEnd,
+          redirectStart,
+          requestStart,
+          responseEnd,
+          responseStart,
+          secureConnectionStart,
+          unloadEventEnd,
+          unloadEventStart,
+        } = timing;
+        return {
+          // 重定向 = redirectEnd - redirectStart
+          redirect: redirectEnd - redirectStart || 0,
+          // 应用缓存 = domainLookupStart - fetchStart
+          cache: domainLookupStart - fetchStart || 0,
+          // DNS解析 = domainLookupEnd - domainLookupStart
+          dns: domainLookupEnd - domainLookupStart || 0,
+          // TCP链接 = connectEnd - connectStart
+          tcp: connectEnd - connectStart || 0,
+          // 安全链接 = connectEnd - secureConnectionStart
+          secureConnection: secureConnectionStart ? connectEnd - secureConnectionStart : 0,
+          // request = responseEnd - requestStart
+          request: responseEnd - requestStart || 0,
+          // 白屏/首屏渲染(跳转到response之间) = responseStart - navigationStart
+          first: responseStart - navigationStart || 0,
+          // unload = unloadEventEnd - unloadEventStart
+          unload: unloadEventEnd - unloadEventStart || 0,
+          // 总体网络交互(开始跳转到服务器资源下载完成) = responseEnd - navigationStart
+          network: responseEnd - navigationStart || 0,
+          // DOM结构解析(未加载图片 样式 等) = domInteractive - domLoading
+          domInteractive: domInteractive - domLoading || 0,
+          // 脚本执行 = domContentLoadedEventEnd - domContentLoadedEventStart
+          script: domContentLoadedEventEnd - domContentLoadedEventStart || 0,
+          // DOM加载(不包括结构解析) = domComplete - domInteractive
+          dom: domComplete - domInteractive || 0,
+          // onload = loadEventEnd - loadEventStart
+          onload: loadEventEnd - loadEventStart || 0,
+          // 合计 = loadEventEnd - navigationStart
+          total: loadEventEnd - navigationStart || 0,
+        };
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  function getResource() {
+    try {
+      if (window) {
+        if (!window.performance) return new Error('performance is not supported');
+        const resource = performance.getEntriesByType('resource');
+        if (!resource || !resource.length) return [];
+        return resource.map(item => ({
+          name: item.name,
+          type: item.initiatorType,
+          duration: item.duration || 0, // 持续时间
+          decodedBodySize: item.decodedBodySize || 0,
+          nextHopProtocol: item.nextHopProtocol,
+        }));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   function privateInit() {
     /**
      * 可捕获语法错误和网络错误 无法捕获 Promise 错误
@@ -459,9 +561,10 @@
     // ajax/fetch Error
     getHttpRequestError();
 
-    /**
-     * 文档卸载前执行发送日志操作
-     */
+    // 获取页面性能信息
+    console.log(getPerformance(), getResource());
+
+    // 文档卸载前执行发送日志操作
     if (window.$OhbugConfig && (window.$OhbugConfig.mode === 'beforeunload')) {
       window.addEventListener && window.addEventListener('unload', () => {
         if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {
