@@ -2,6 +2,9 @@ import { getError, caughtError, reportError } from './getError';
 import getHttpRequestError from './getHttpRequestError';
 import report from './report';
 import { errorList } from './handleError';
+import { getPerformance, getResource } from './getPerformance';
+import getUV from './getUV';
+import getBaseInfo from './getBaseInfo';
 
 function privateInit() {
   /**
@@ -17,7 +20,7 @@ function privateInit() {
       type: 'default',
       e,
     });
-  }, true);
+  }, false);
 
   /**
    * 可捕获 Promise 错误
@@ -29,7 +32,7 @@ function privateInit() {
       type: 'promise',
       e,
     });
-  }, true);
+  }, false);
 
   // ajax/fetch Error
   getHttpRequestError();
@@ -41,6 +44,21 @@ function privateInit() {
         report(errorList);
       }
     });
+  }
+
+  if (window.$OhbugConfig && (window.$OhbugConfig.performance)) {
+    window.addEventListener && window.addEventListener('load', () => {
+      const performance = getPerformance();
+      const resource = getResource();
+      const UV = getUV();
+      const data = {
+        ...getBaseInfo(),
+      };
+      if (performance && performance.length) data.performance = performance;
+      if (resource && resource.length) data.resource = resource;
+      if (UV) data.UV = UV;
+      report(data);
+    }, false);
   }
 }
 
@@ -59,6 +77,8 @@ Ohbug.init = function (conf) {
         maxError: 10, // 最大上传错误数量
         mode: 'immediately', // 短信发送模式 immediately 立即发送 beforeunload 页面注销前发送
         ignore: [], // 忽略指定错误 目前只支持忽略 HTTP 请求错误
+        error: true, // 是否上报错误信息
+        performance: false, // 是否上报性能信息
       };
     }
     if (conf) {

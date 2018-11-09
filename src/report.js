@@ -1,6 +1,6 @@
 /**
  * report
- * 封装上报错误
+ * 封装上报
  */
 
 import { print } from './util';
@@ -11,7 +11,7 @@ const isDev = reg.test(window.location.host) || window.location.host.indexOf('lo
 
 /**
  * request
- * 上报错误
+ * 上报
  *
  * @param {Array} data
  * @private

@@ -17,22 +17,28 @@
 3. HTTP请求错误
 4. 未catch处理的Promise错误
 
-### 错误上报
-
-上报流程可自定义，目前分为立即上报和页面卸载前上报，未来将支持 Vue、React 路由跳转后上报。
-
 ### 性能监控
 
 todo...
+
+### 错误上报
+
+上报方法可自定义，上报时机分为：
+
+1. 发生错误时立即上报错误
+2. 页面卸载前上报。
+
+### 性能信息上报
+
+页面加载完成后上报
 
 ## Todo
 - [ ] 捕获websocket错误
 - [ ] 设置采集率
 - [ ] sourcemap定位压缩代码具体错误位置
-- [ ] Vue、React 增加路由跳转后上报信息
-- [ ] 页面性能监控
+- [x] 页面性能监控
 - [ ] 页面HTTP请求性能监控
-- [ ] 页面资源加载性能监控
+- [x] 页面资源加载性能监控
 
 ## 原理
 
@@ -156,14 +162,17 @@ Ohbug.init({
 
 | key | description | type | default |
 | :------: | :------: | :------: | :------: |
-| report | 上传错误函数 | function | null |
+| report | 上传函数 | function | null |
 | others | 自定义信息 | object | null |
-| enabledDev | 开发环境下上传错误 (目前是判断当前 url 中是否含有 `127.0.0.1` / `localhost` 确定是否为本地) | boolean | false |
+| enabledDev | 开发环境下上传 (目前是判断当前 url 中是否含有 `127.0.0.1` / `localhost` 确定是否为本地) | boolean | false |
+| | 以下为错误信息上报相关配置 | | |
+| error | 是否上报错误信息 | boolean | true |
 | maxError | 发送日志请求连续出错的最大次数 超过则不再发送请求 | number | 10 | 
 | mode | 短信发送模式 ('immediately': 立即发送 'beforeunload': 页面注销前发送) | string | 'immediately' |
 | delay | 错误处理间隔时间 | number | 2000 |
 | ignore | 忽略指定错误 目前只支持忽略 HTTP 请求错误 | array | [] |
-
+| | 以下为性能信息上报相关配置 | | |
+| performance | 是否上报性能信息 | boolean | false |
 ## 注意
 
 ### `mode` 属性

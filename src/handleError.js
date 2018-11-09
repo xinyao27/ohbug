@@ -34,7 +34,9 @@ function handleError(error) {
   // 控制错误数量在指定条数以内
   const config = window.$OhbugConfig;
   if (
-    config && (config.mode === 'immediately' || !config.mode)
+    config
+    && config.error
+    && (config.mode === 'immediately' || !config.mode)
     && errorList.length && errorList.length <= config.maxError
   ) {
     request();
