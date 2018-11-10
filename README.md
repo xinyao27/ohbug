@@ -221,3 +221,22 @@ Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
 | ajaxError | ajax 错误 |
 | fetchError | fetch 错误 |
 | reportError | 主动上报的错误 |
+
+## 性能信息类型
+
+| type | description |
+| :------: | :------: |
+| redirect | 重定向耗时 |
+| cache | 应用缓存耗时 |
+| dns | DNS解析耗时 |
+| tcp | TCP链接耗时 |
+| secureConnection | 安全链接耗时 |
+| request | request耗时 |
+| first | 白屏/首屏渲染(跳转到response之间)耗时 |
+| unload | unload耗时 |
+| network | 总体网络交互(开始跳转到服务器资源下载完成)耗时 |
+| domInteractive | DOM结构解析(未加载图片 样式 等)耗时 |
+| script | 脚本执行耗时 |
+| dom | DOM加载(不包括结构解析)耗时 |
+| onload | onload耗时 |
+| total | 合计耗时 |

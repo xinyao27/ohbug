@@ -95,9 +95,17 @@
     });
   }
 
+  function UUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16 | 0; // eslint-disable-line
+      const v = c === 'x' ? r : (r & 0x3 | 0x8); // eslint-disable-line
+      return v.toString(16);
+    });
+  }
+
   /**
    * report
-   * 封装上报错误
+   * 封装上报
    */
 
   // 判断 dev prod 环境
@@ -106,7 +114,7 @@
 
   /**
    * request
-   * 上报错误
+   * 上报
    *
    * @param {Array} data
    * @private
@@ -158,7 +166,9 @@
     // 控制错误数量在指定条数以内
     const config = window.$OhbugConfig;
     if (
-      config && (config.mode === 'immediately' || !config.mode)
+      config
+      && config.error
+      && (config.mode === 'immediately' || !config.mode)
       && errorList.length && errorList.length <= config.maxError
     ) {
       request();
@@ -443,6 +453,118 @@
     }
   }
 
+  /**
+   * getPerformance
+   * 获取页面性能信息
+   */
+
+  function getPerformance() {
+    try {
+      if (window) {
+        if (!window.performance) return new Error('performance is not supported');
+        const { timing } = window.performance;
+        const {
+          connectEnd,
+          connectStart,
+          domComplete,
+          domContentLoadedEventEnd,
+          domContentLoadedEventStart,
+          domInteractive,
+          domLoading,
+          domainLookupEnd,
+          domainLookupStart,
+          fetchStart,
+          loadEventEnd,
+          loadEventStart,
+          navigationStart,
+          redirectEnd,
+          redirectStart,
+          requestStart,
+          responseEnd,
+          responseStart,
+          secureConnectionStart,
+          unloadEventEnd,
+          unloadEventStart,
+        } = timing;
+        return {
+          // 重定向 = redirectEnd - redirectStart
+          redirect: redirectEnd - redirectStart || 0,
+          // 应用缓存 = domainLookupStart - fetchStart
+          cache: domainLookupStart - fetchStart || 0,
+          // DNS解析 = domainLookupEnd - domainLookupStart
+          dns: domainLookupEnd - domainLookupStart || 0,
+          // TCP链接 = connectEnd - connectStart
+          tcp: connectEnd - connectStart || 0,
+          // 安全链接 = connectEnd - secureConnectionStart
+          secureConnection: secureConnectionStart ? connectEnd - secureConnectionStart : 0,
+          // request = responseEnd - requestStart
+          request: responseEnd - requestStart || 0,
+          // 白屏/首屏渲染(跳转到response之间) = responseStart - navigationStart
+          first: responseStart - navigationStart || 0,
+          // unload = unloadEventEnd - unloadEventStart
+          unload: unloadEventEnd - unloadEventStart || 0,
+          // 总体网络交互(开始跳转到服务器资源下载完成) = responseEnd - navigationStart
+          network: responseEnd - navigationStart || 0,
+          // DOM结构解析(未加载图片 样式 等) = domInteractive - domLoading
+          domInteractive: domInteractive - domLoading || 0,
+          // 脚本执行 = domContentLoadedEventEnd - domContentLoadedEventStart
+          script: domContentLoadedEventEnd - domContentLoadedEventStart || 0,
+          // DOM加载(不包括结构解析) = domComplete - domInteractive
+          dom: domComplete - domInteractive || 0,
+          // onload = loadEventEnd - loadEventStart
+          onload: loadEventEnd - loadEventStart || 0,
+          // 合计 = loadEventEnd - navigationStart
+          total: loadEventEnd - navigationStart || 0,
+        };
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  function getResource() {
+    try {
+      if (window) {
+        if (!window.performance) return new Error('performance is not supported');
+        const resource = performance.getEntriesByType('resource');
+        if (!resource || !resource.length) return [];
+        return resource.map(item => ({
+          name: item.name, // 路径
+          type: item.initiatorType, // 类型
+          duration: item.duration || 0, // 持续时间
+          decodedBodySize: item.decodedBodySize || 0, // 返回数据大小
+          nextHopProtocol: item.nextHopProtocol, // script img fetchrequest xmlhttprequest other
+        }));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /**
+   * getUV
+   * 获取UV
+   */
+
+  function getUV() {
+    try {
+      if (window.localStorage) {
+        const now = new Date();
+        let UV = localStorage.getItem('$OhbugUV') || '';
+        const time = localStorage.getItem('$OhbugUVTime') || '';
+        if ((!UV && !time) || (now.getTime() > time * 1)) {
+          UV = UUID();
+          localStorage.setItem('$OhbugUV', UV);
+          const today = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} 23:59:59`;
+          localStorage.setItem('$OhbugUVTime', new Date(today).getTime());
+        }
+        return UV;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   function privateInit() {
     /**
      * 可捕获语法错误和网络错误 无法捕获 Promise 错误
@@ -457,7 +579,7 @@
         type: 'default',
         e,
       });
-    }, true);
+    }, false);
 
     /**
      * 可捕获 Promise 错误
@@ -469,7 +591,7 @@
         type: 'promise',
         e,
       });
-    }, true);
+    }, false);
 
     // ajax/fetch Error
     getHttpRequestError();
@@ -481,6 +603,21 @@
           report(errorList);
         }
       });
+    }
+
+    if (window.$OhbugConfig && (window.$OhbugConfig.performance)) {
+      window.addEventListener && window.addEventListener('load', () => {
+        const performance = getPerformance();
+        const resource = getResource();
+        const UV = getUV();
+        const data = {
+          ...getBaseInfo(),
+        };
+        if (performance) data.performance = performance;
+        if (resource && resource.length) data.resource = resource;
+        if (UV) data.UV = UV;
+        report(data);
+      }, false);
     }
   }
 
@@ -499,6 +636,8 @@
           maxError: 10, // 最大上传错误数量
           mode: 'immediately', // 短信发送模式 immediately 立即发送 beforeunload 页面注销前发送
           ignore: [], // 忽略指定错误 目前只支持忽略 HTTP 请求错误
+          error: true, // 是否上报错误信息
+          performance: false, // 是否上报性能信息
         };
       }
       if (conf) {

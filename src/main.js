@@ -54,7 +54,7 @@ function privateInit() {
       const data = {
         ...getBaseInfo(),
       };
-      if (performance && performance.length) data.performance = performance;
+      if (performance) data.performance = performance;
       if (resource && resource.length) data.resource = resource;
       if (UV) data.UV = UV;
       report(data);
