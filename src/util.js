@@ -1,11 +1,3 @@
-/**
- * debounce
- *
- * @param   {Function}  func
- * @param   {Number}    delay
- * @returns {Function}
- * @private
- */
 let timer;
 function debounce(func, delay) {
   return function () {

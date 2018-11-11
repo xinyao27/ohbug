@@ -1,8 +1,3 @@
-/**
- * getUV
- * 获取UV
- */
-
 import { UUID, print } from '../util';
 
 function getUV() {

@@ -1,10 +1,5 @@
 /**
  * getBaseInfo
- * 获取信息
- */
-
-/**
- * getBaseInfo
  * 获取用户名、ID、时间戳、其他自定义信息等
  *
  * @returns {Object}

@@ -1,8 +1,3 @@
-/**
- * handleError
- * 收集并 print 错误
- */
-
 import getBaseInfo from '../info/getBaseInfo';
 import { debounce, print } from '../util';
 import report from './report';

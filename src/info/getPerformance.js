@@ -1,10 +1,9 @@
+import { print } from '../util';
+
 /**
  * getPerformance
  * 获取页面性能信息
  */
-
-import { print } from '../util';
-
 function getPerformance() {
   try {
     if (window) {

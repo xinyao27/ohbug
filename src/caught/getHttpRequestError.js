@@ -1,8 +1,3 @@
-/**
- * getHTTPRequestError
- * 捕获 HTTP 请求错误
- */
-
 import {
   AJAX_ERROR,
   FETCH_ERROR,

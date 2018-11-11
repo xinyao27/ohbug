@@ -1,8 +1,3 @@
-/**
- * report
- * 封装上报
- */
-
 import { print } from '../util';
 
 // 判断 dev prod 环境
