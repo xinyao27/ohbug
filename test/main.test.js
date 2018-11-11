@@ -1,7 +1,7 @@
 import { init, config } from './common';
 
-describe('have $OhbugAuth and $OhbugConfig', () => {
-  it('init', () => {
+describe('Ohbug.init', () => {
+  test('has $OhbugAuth and $OhbugConfig', () => {
     init();
     const $auth = window.$OhbugAuth;
     const $config = window.$OhbugConfig;

@@ -1,7 +1,7 @@
 import getBaseInfo from '../../src/info/getBaseInfo';
 
-describe('have $OhbugAuth and $OhbugConfig', () => {
-  it('init', () => {
+describe('getBaseInfo', () => {
+  test('has attr time userAgent url title preUrl', () => {
     const baseInfo = getBaseInfo();
     expect(baseInfo).toHaveProperty('time');
     expect(baseInfo).toHaveProperty('userAgent');
