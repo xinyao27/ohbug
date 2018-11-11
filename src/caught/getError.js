@@ -10,8 +10,8 @@ import {
   PROMISE_ERROR,
   CAUGHT_ERROR,
   REPORT_ERROR,
-} from './constant';
-import handleError from './handleError';
+} from '../constant';
+import handleError from '../handle/handleError';
 
 /**
  * getError

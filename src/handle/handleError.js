@@ -3,8 +3,8 @@
  * 收集并 print 错误
  */
 
-import getBaseInfo from './getBaseInfo';
-import { debounce, print } from './util';
+import getBaseInfo from '../info/getBaseInfo';
+import { debounce, print } from '../util';
 import report from './report';
 
 // 储存所有报错信息

@@ -1,10 +1,10 @@
-import { getError, caughtError, reportError } from './getError';
-import getHttpRequestError from './getHttpRequestError';
-import report from './report';
-import { errorList } from './handleError';
-import { getPerformance, getResource } from './getPerformance';
-import getUV from './getUV';
-import getBaseInfo from './getBaseInfo';
+import { getError, caughtError, reportError } from './caught/getError';
+import getHttpRequestError from './caught/getHttpRequestError';
+import report from './handle/report';
+import { errorList } from './handle/handleError';
+import { getPerformance, getResource } from './info/getPerformance';
+import getUV from './info/getUV';
+import getBaseInfo from './info/getBaseInfo';
 
 function privateInit() {
   /**

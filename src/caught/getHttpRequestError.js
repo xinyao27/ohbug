@@ -6,9 +6,9 @@
 import {
   AJAX_ERROR,
   FETCH_ERROR,
-} from './constant';
-import getBaseInfo from './getBaseInfo';
-import handleError from './handleError';
+} from '../constant';
+import getBaseInfo from '../info/getBaseInfo';
+import handleError from '../handle/handleError';
 
 /**
  * getHttpRequestError

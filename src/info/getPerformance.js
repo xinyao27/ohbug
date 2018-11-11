@@ -3,7 +3,7 @@
  * 获取页面性能信息
  */
 
-import { print } from './util';
+import { print } from '../util';
 
 function getPerformance() {
   try {

@@ -3,7 +3,7 @@
  * 获取UV
  */
 
-import { UUID, print } from './util';
+import { UUID, print } from '../util';
 
 function getUV() {
   try {
