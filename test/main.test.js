@@ -1,4 +1,4 @@
-import { init, config } from './common';
+import { init, config } from './init';
 
 describe('Ohbug.init', () => {
   test('has $OhbugAuth and $OhbugConfig', () => {

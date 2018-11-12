@@ -1,4 +1,4 @@
-import getBaseInfo from '../../src/info/getBaseInfo';
+import getBaseInfo from '../src/info/getBaseInfo';
 
 describe('getBaseInfo', () => {
   test('has attr time userAgent url title preUrl', () => {

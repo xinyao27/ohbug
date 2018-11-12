@@ -1,4 +1,4 @@
-import getUV from '../../src/info/getUV';
+import getUV from '../src/info/getUV';
 
 describe('getUV', () => {
   test('match uuid', () => {
