@@ -1,6 +1,9 @@
 # Ohbug
 
-> 前端监控客户端
+[![Build Status](https://travis-ci.org/chenyueban/ohbug.svg?branch=master)](https://travis-ci.org/chenyueban/ohbug)
+[![codecov](https://codecov.io/gh/chenyueban/ohbug/branch/master/graph/badge.svg)](https://codecov.io/gh/chenyueban/ohbug)
+[![npm](https://img.shields.io/npm/v/ohbug.svg)](https://www.npmjs.com/package/ohbug)
+[![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/chenyueban/ohbug/blob/master/LICENSE)
 
 ## 简介
 
