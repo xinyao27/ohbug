@@ -20,11 +20,6 @@
 
   /**
    * getBaseInfo
-   * 获取信息
-   */
-
-  /**
-   * getBaseInfo
    * 获取用户名、ID、时间戳、其他自定义信息等
    *
    * @returns {Object}
@@ -50,14 +45,6 @@
     return result;
   }
 
-  /**
-   * debounce
-   *
-   * @param   {Function}  func
-   * @param   {Number}    delay
-   * @returns {Function}
-   * @private
-   */
   let timer;
   function debounce(func, delay) {
     return function () {
@@ -103,11 +90,6 @@
     });
   }
 
-  /**
-   * report
-   * 封装上报
-   */
-
   // 判断 dev prod 环境
   const reg = /^(https?:\/\/)?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(.+)?$/;
   const isDev = reg.test(window.location.host) || window.location.host.indexOf('localhost') > -1;
@@ -133,11 +115,6 @@
       print(`发送日志失败 errorInfo:${e}`);
     }
   }
-
-  /**
-   * handleError
-   * 收集并 print 错误
-   */
 
   // 储存所有报错信息
   const errorList = [];
@@ -174,11 +151,6 @@
       request();
     }
   }
-
-  /**
-   * getError
-   * 捕获错误 分为自动捕获和手动捕获
-   */
 
   /**
    * getError
@@ -351,11 +323,6 @@
   };
 
   /**
-   * getHTTPRequestError
-   * 捕获 HTTP 请求错误
-   */
-
-  /**
    * getHttpRequestError
    * ajax/fetch Error
    *
@@ -457,7 +424,6 @@
    * getPerformance
    * 获取页面性能信息
    */
-
   function getPerformance() {
     try {
       if (window) {
@@ -540,11 +506,6 @@
       print(e);
     }
   }
-
-  /**
-   * getUV
-   * 获取UV
-   */
 
   function getUV() {
     try {
