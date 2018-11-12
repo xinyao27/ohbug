@@ -2,8 +2,6 @@ language: node_js
 sudo: required
 node_js:
 - "lts/*"
-before_install:
-- npm install -g yarn --cache-min 999999999
 install:
 - yarn
 script:
