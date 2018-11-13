@@ -20,7 +20,7 @@ function privateInit() {
       type: 'default',
       e,
     });
-  }, false);
+  }, true);
 
   /**
    * 可捕获 Promise 错误
@@ -32,7 +32,7 @@ function privateInit() {
       type: 'promise',
       e,
     });
-  }, false);
+  }, true);
 
   // ajax/fetch Error
   getHttpRequestError();
@@ -43,7 +43,7 @@ function privateInit() {
       if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {
         report(errorList);
       }
-    });
+    }, true);
   }
 
   if (window.$OhbugConfig && (window.$OhbugConfig.performance)) {
@@ -58,7 +58,7 @@ function privateInit() {
       if (resource && resource.length) data.resource = resource;
       if (UV) data.UV = UV;
       report(data);
-    }, false);
+    }, true);
   }
 }
 

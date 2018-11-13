@@ -540,7 +540,7 @@
         type: 'default',
         e,
       });
-    }, false);
+    }, true);
 
     /**
      * 可捕获 Promise 错误
@@ -552,7 +552,7 @@
         type: 'promise',
         e,
       });
-    }, false);
+    }, true);
 
     // ajax/fetch Error
     getHttpRequestError();
@@ -563,7 +563,7 @@
         if (errorList.length && errorList.length <= window.$OhbugConfig.maxError) {
           report(errorList);
         }
-      });
+      }, true);
     }
 
     if (window.$OhbugConfig && (window.$OhbugConfig.performance)) {
@@ -578,7 +578,7 @@
         if (resource && resource.length) data.resource = resource;
         if (UV) data.UV = UV;
         report(data);
-      }, false);
+      }, true);
     }
   }
 
