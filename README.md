@@ -57,7 +57,7 @@
 #### script mode
 
 ```html
-<script src="./ohbug.js"></script>
+<script src="https://unpkg.com/ohbug@0.1.0/dist/ohbug.min.js"></script>
 
 <script>
   Ohbug.init({
@@ -243,3 +243,9 @@ Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
 | dom | DOM加载(不包括结构解析)耗时 |
 | onload | onload耗时 |
 | total | 合计耗时 |
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
+
+Copyright (c) 2018 陈月半
