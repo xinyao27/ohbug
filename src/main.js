@@ -79,6 +79,7 @@ Ohbug.init = function (conf) {
         ignore: [], // 忽略指定错误 目前只支持忽略 HTTP 请求错误
         error: true, // 是否上报错误信息
         performance: false, // 是否上报性能信息
+        include: null, // 用于收集指定用户的特定信息
       };
     }
     if (conf) {

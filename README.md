@@ -178,6 +178,7 @@ Ohbug.init({
 | ignore | 忽略指定错误 目前只支持忽略 HTTP 请求错误 | array | [] |
 | | 以下为性能信息上报相关配置 | | |
 | performance | 是否上报性能信息 | boolean | false |
+| include |  收集指定用户的特定信息 | function | null |
 ## 注意
 
 ### `mode` 属性
@@ -211,6 +212,30 @@ Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
 使用场景: 
 1. 可能频繁出错或不需上报的api。
 2. 由于上报请求完全自定义，一旦上报请求发生错误，Ohbug无法判断错误来源，会导致无限循环上报，此时将上报的 url 添加入 `ignore` 数组内，忽略上报请求的错误。
+
+### `include` 属性
+Ohbug 会调用传入函数, 当使用 `reportError` 时只捕获指定的信息.
+
+配置:
+```js
+function include() {
+  if (window.user === 'frank') return true
+  return false
+}
+Ohbug.init({
+  include,
+})
+```
+使用 `reportError` :
+```js
+import { reportError } from 'ohbug';
+
+class Test extends React.Component {
+  hello() {
+    reportError('hello', true) // 只有当前用户为 `frank` 时, 才会上报信息 'hello'
+  }
+}
+```
 
 ## 错误类型
 
