@@ -122,28 +122,28 @@ class Test extends React.Component {
 }
 ```
 
-针对一些不能使用装饰器或自定义信息使用 `reportError`
+针对一些不能使用装饰器或自定义信息使用 `reportInfo`
 
 ```javascript
-import { reportError } from 'ohbug';
+import { reportInfo } from 'ohbug';
 
 class Test extends React.Component {
   send() {
     try {
       // ...
     } catch(e) {
-      reportError(e)
+      reportInfo(e)
     }
   }
 }
 ```
 
 ```javascript
-import { reportError } from 'ohbug';
+import { reportInfo } from 'ohbug';
 
 class Test extends React.Component {
   hello() {
-    reportError('hello')
+    reportInfo('hello')
   }
 }
 ```
@@ -214,7 +214,7 @@ Ohbug 在捕获错误时会忽略 `ignore` 数组内的 url。
 2. 由于上报请求完全自定义，一旦上报请求发生错误，Ohbug无法判断错误来源，会导致无限循环上报，此时将上报的 url 添加入 `ignore` 数组内，忽略上报请求的错误。
 
 ### `include` 属性
-Ohbug 会调用传入函数, 当使用 `reportError` 时只捕获指定的信息.
+Ohbug 会调用传入函数, 当使用 `reportInfo` 时只捕获指定的信息.
 
 配置:
 ```js
@@ -226,13 +226,13 @@ Ohbug.init({
   include,
 })
 ```
-使用 `reportError` :
+使用 `reportInfo` :
 ```js
-import { reportError } from 'ohbug';
+import { reportInfo } from 'ohbug';
 
 class Test extends React.Component {
   hello() {
-    reportError('hello', true) // 只有当前用户为 `frank` 时, 才会上报信息 'hello'
+    reportInfo('hello', true) // 只有当前用户为 `frank` 时, 才会上报信息 'hello'
   }
 }
 ```
@@ -248,7 +248,7 @@ class Test extends React.Component {
 | promiseError | promise 错误 |
 | ajaxError | ajax 错误 |
 | fetchError | fetch 错误 |
-| reportError | 主动上报的错误 |
+| reportInfo | 主动上报的信息 |
 
 ## 性能信息类型
 

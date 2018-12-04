@@ -1,4 +1,4 @@
-import { getError, caughtError, reportError } from './caught/getError';
+import { getError, caughtError, reportInfo } from './caught/getError';
 import getHttpRequestError from './caught/getHttpRequestError';
 import report from './handle/report';
 import { errorList } from './handle/handleError';
@@ -96,6 +96,6 @@ Ohbug.init = function (conf) {
 };
 
 Ohbug.caughtError = caughtError;
-Ohbug.reportError = reportError;
+Ohbug.reportInfo = reportInfo;
 
 export default Ohbug;

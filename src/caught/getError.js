@@ -4,7 +4,7 @@ import {
   GRAMMAR_ERROR,
   PROMISE_ERROR,
   CAUGHT_ERROR,
-  REPORT_ERROR,
+  REPORT_INFO,
 } from '../constant';
 import handleError from '../handle/handleError';
 
@@ -165,11 +165,11 @@ const caughtError = (target, name, descriptor) => {
   }
 };
 
-// 用于上报自定义错误
-const reportError = (error) => {
+// 用于上报自定义信息
+const reportInfo = (error) => {
   if (window.$OhbugAuth) {
     const message = {
-      type: REPORT_ERROR,
+      type: REPORT_INFO,
       desc: error,
     };
     handleError(message);
@@ -181,5 +181,5 @@ const reportError = (error) => {
 export {
   getError,
   caughtError,
-  reportError,
+  reportInfo,
 };
