@@ -91,7 +91,7 @@ Ohbug.init = function (conf) {
 
     if (window.$OhbugAuth) privateInit();
   } else {
-    console.error('检测到当前环境不支持 Ohbug！');
+    console.error('Ohbug: 检测到当前环境不支持 Ohbug！');
   }
 };
 

@@ -16,7 +16,7 @@
   const PROMISE_ERROR = 'promiseError'; // promise 错误，可能包含 render 等错误
   const AJAX_ERROR = 'ajaxError'; // ajax 错误
   const FETCH_ERROR = 'fetchError'; // fetch 错误
-  const REPORT_ERROR = 'reportError'; // 主动上报的错误
+  const REPORT_INFO = 'reportInfo'; // 主动上报的信息
 
   /**
    * getBaseInfo
@@ -305,20 +305,31 @@
         };
       }
     } else {
-      console.error('检测到未执行 Ohbug.init()');
+      console.error('Ohbug: 检测到未执行 Ohbug.init()');
     }
   };
 
-  // 用于上报自定义错误
-  const reportError = (error) => {
+  // 用于上报自定义信息
+  const reportInfo = (info, include) => {
     if (window.$OhbugAuth) {
+      const config = window.$OhbugConfig;
       const message = {
-        type: REPORT_ERROR,
-        desc: error,
+        type: REPORT_INFO,
+        desc: info,
       };
-      handleError(message);
+      if (config.include) {
+        if (typeof config.include === 'function') {
+          config.include() && include && handleError(message);
+        } else {
+          console.error('Ohbug: 参数 include 类型必须为 function');
+        }
+      } else if (!config.include && include) {
+        console.error('Ohbug: Ohbug.init 未传入参数 include');
+      } else if (!config.include && !include) {
+        handleError(message);
+      }
     } else {
-      console.error('检测到未执行 Ohbug.init()');
+      console.error('Ohbug: 检测到未执行 Ohbug.init()');
     }
   };
 
@@ -599,6 +610,7 @@
           ignore: [], // 忽略指定错误 目前只支持忽略 HTTP 请求错误
           error: true, // 是否上报错误信息
           performance: false, // 是否上报性能信息
+          include: null, // 用于收集指定用户的特定信息
         };
       }
       if (conf) {
@@ -610,12 +622,12 @@
 
       if (window.$OhbugAuth) privateInit();
     } else {
-      console.error('检测到当前环境不支持 Ohbug！');
+      console.error('Ohbug: 检测到当前环境不支持 Ohbug！');
     }
   };
 
   Ohbug.caughtError = caughtError;
-  Ohbug.reportError = reportError;
+  Ohbug.reportInfo = reportInfo;
 
   return Ohbug;
 

@@ -161,20 +161,31 @@ const caughtError = (target, name, descriptor) => {
       };
     }
   } else {
-    console.error('检测到未执行 Ohbug.init()');
+    console.error('Ohbug: 检测到未执行 Ohbug.init()');
   }
 };
 
 // 用于上报自定义信息
-const reportInfo = (error) => {
+const reportInfo = (info, include) => {
   if (window.$OhbugAuth) {
+    const config = window.$OhbugConfig;
     const message = {
       type: REPORT_INFO,
-      desc: error,
+      desc: info,
     };
-    handleError(message);
+    if (config.include) {
+      if (typeof config.include === 'function') {
+        config.include() && include && handleError(message);
+      } else {
+        console.error('Ohbug: 参数 include 类型必须为 function');
+      }
+    } else if (!config.include && include) {
+      console.error('Ohbug: Ohbug.init 未传入参数 include');
+    } else if (!config.include && !include) {
+      handleError(message);
+    }
   } else {
-    console.error('检测到未执行 Ohbug.init()');
+    console.error('Ohbug: 检测到未执行 Ohbug.init()');
   }
 };
 
