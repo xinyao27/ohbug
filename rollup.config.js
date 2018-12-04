@@ -1,4 +1,5 @@
 import { terser } from 'rollup-plugin-terser';
+import babel from 'rollup-plugin-babel';
 
 const config = {
   input: './src/main.js',
@@ -7,7 +8,11 @@ const config = {
     format: 'umd',
     name: 'Ohbug',
   },
-  plugins: [],
+  plugins: [
+    babel({
+      exclude: 'node_modules/**', // 只编译我们的源代码
+    }),
+  ],
 };
 
 if (process.argv[3] === '--compress') {
