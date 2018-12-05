@@ -6,10 +6,10 @@ import report from './report';
 export const errorList = [];
 
 // 发生错误一段时间后发送请求 防抖控制指定时间内只发送一次请求
-const request = debounce(() => {
+const request = delay => debounce(() => {
   print(errorList);
   report(errorList);
-}, (window.$OhbugConfig && window.$OhbugConfig.delay) || 2000);
+}, delay).call();
 
 /**
  * handleError
@@ -34,7 +34,7 @@ function handleError(error) {
     && (config.mode === 'immediately' || !config.mode)
     && errorList.length && errorList.length <= config.maxError
   ) {
-    request();
+    request((config && config.delay) || 2000);
   }
 }
 

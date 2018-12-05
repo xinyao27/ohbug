@@ -4,6 +4,7 @@
   "description": "js caught and report error",
   "main": "dist/ohbug.min.js",
   "scripts": {
+    "watch": "rollup -c --watch",
     "build": "rollup -c",
     "build:compress": "rollup -c --compress",
     "lint": "eslint ./src",

@@ -155,10 +155,12 @@
 
   var errorList = []; // 发生错误一段时间后发送请求 防抖控制指定时间内只发送一次请求
 
-  var request = debounce(function () {
-    print(errorList);
-    report(errorList);
-  }, window.$OhbugConfig && window.$OhbugConfig.delay || 2000);
+  var request = function request(delay) {
+    return debounce(function () {
+      print(errorList);
+      report(errorList);
+    }, delay).call();
+  };
   /**
    * handleError
    * 错误处理
@@ -167,6 +169,7 @@
    * @private
    */
 
+
   function handleError(error) {
     print(error);
     errorList.push(_objectSpread({}, getBaseInfo(), error)); // 控制错误数量在指定条数以内
@@ -174,7 +177,7 @@
     var config = window.$OhbugConfig;
 
     if (config && config.error && (config.mode === 'immediately' || !config.mode) && errorList.length && errorList.length <= config.maxError) {
-      request();
+      request(config && config.delay || 2000);
     }
   }
 
