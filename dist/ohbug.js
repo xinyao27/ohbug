@@ -2565,13 +2565,20 @@
 
       if (config.include) {
         if (typeof config.include === 'function') {
-          config.include() && include && handleError(message);
+          if (include) {
+            // 传入筛选选项 include 且 reportInfo 传入第二个参数 true
+            config.include() && handleError(message);
+          } else {
+            // 传入筛选选项 include 但 reportInfo 未传入第二个参数 true, 此时走正常逻辑
+            handleError(message);
+          }
         } else {
           console.error('Ohbug: 参数 include 类型必须为 function');
         }
       } else if (!config.include && include) {
         console.error('Ohbug: Ohbug.init 未传入参数 include');
       } else if (!config.include && !include) {
+        // 未传入筛选选项 include 且 reportInfo 未传入第二个参数 true
         handleError(message);
       }
     } else {
