@@ -1,8 +1,18 @@
 {
   "presets": [
-    ["@babel/env", {
-      "modules": false
-    }]
+    [
+      "@babel/env",
+      {
+        "modules": false
+      }
+    ]
   ],
-  "plugins": ["lodash"]
+  "plugins": [
+    "lodash"
+  ],
+  "env": {
+    "test": {
+      "plugins": ["transform-es2015-modules-commonjs"]
+    }
+  }
 }
