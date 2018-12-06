@@ -1,5 +1,7 @@
 import { terser } from 'rollup-plugin-terser';
 import babel from 'rollup-plugin-babel';
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 
 const config = {
   input: './src/main.js',
@@ -11,6 +13,14 @@ const config = {
   plugins: [
     babel({
       exclude: 'node_modules/**', // 只编译我们的源代码
+    }),
+    commonjs({
+      include: 'node_modules/**',
+    }),
+    resolve({
+      jsnext: true, // Default: false
+      browser: true, // Default: false
+      preferBuiltins: false, // Default: true
     }),
   ],
 };

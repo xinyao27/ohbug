@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash';
 import getBaseInfo from '../info/getBaseInfo';
 import { debounce, print } from '../util';
 import report from './report';
@@ -21,10 +22,22 @@ const request = delay => debounce(() => {
 function handleError(error) {
   print(error);
 
-  errorList.push({
-    ...getBaseInfo(),
-    ...error,
-  });
+  if (errorList.length) {
+    // 防止重复上报
+    errorList.forEach((e) => {
+      if (!(isEqual(error.desc, e.desc))) {
+        errorList.push({
+          ...getBaseInfo(),
+          ...error,
+        });
+      }
+    });
+  } else {
+    errorList.push({
+      ...getBaseInfo(),
+      ...error,
+    });
+  }
 
   // 控制错误数量在指定条数以内
   const config = window.$OhbugConfig;
