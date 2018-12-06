@@ -57,7 +57,7 @@
 #### script mode
 
 ```html
-<script src="https://unpkg.com/ohbug@0.1.0/dist/ohbug.min.js"></script>
+<script src="https://unpkg.com/ohbug"></script>
 
 <script>
   Ohbug.init({
@@ -68,7 +68,7 @@
 </script>
 ```
 
-#### module mode
+#### module mode (React)
 
 1.安装
 
@@ -80,16 +80,20 @@ npm install ohbug --save
 yarn add ohbug
 ```
 
-2.在文件中添加
+2.在 根组件文件中添加
 
 ```javascript
 import Ohbug from 'ohbug'
 
-Ohbug.init({
-  report(errorList) {
-    // 上传错误至服务端
+class Root extends React.Component {
+  componentDidMount() {
+    Ohbug.init({
+      report(errorList) {
+        // 上传错误至服务端
+      }
+    })
   }
-})
+}
 ```
 
 ## 主动捕获上报
