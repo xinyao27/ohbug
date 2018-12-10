@@ -58,6 +58,8 @@
 
   var REPORT_INFO = 'reportInfo'; // 主动上报的信息
 
+  var UNKNOWN_ERROR = 'unknownError'; // 未知错误
+
   /**
    * Removes all key-value entries from the list cache.
    *
@@ -2491,7 +2493,11 @@
 
       return false;
     } catch (err) {
-      handleError(err);
+      var _message4 = {
+        type: UNKNOWN_ERROR,
+        desc: 'unknown error'
+      };
+      handleError(_message4);
     }
   } // 使用装饰器 用于单独捕获错误
 
@@ -2617,29 +2623,31 @@
           };
 
           window.XMLHttpRequest.prototype.send = function () {
-            var message = _objectSpread({}, getBaseInfo(), {
-              type: AJAX_ERROR,
-              req: {
-                url: that.reqUrl,
-                method: that.reqMethod,
-                data: arguments[0] || {}
-              },
-              res: {
-                status: 0,
-                statusText: '',
-                response: null
-              }
-            });
-
             this.addEventListener('readystatechange', function () {
               if (this.readyState === 4) {
-                message.res.response = this.response;
-                message.res.status = this.status;
-                message.res.statusText = this.statusText;
+                // 判断当前 http 请求是否在 ignore 中
                 var isIgnore = ignore.filter(function (u) {
                   return that.reqUrl.indexOf(u) > -1;
                 });
-                (!this.status || this.status >= 400) && !isIgnore.length && handleError(message);
+
+                if ((!this.status || this.status >= 400) && !isIgnore.length) {
+                  var message = {
+                    type: AJAX_ERROR,
+                    desc: {
+                      req: {
+                        url: that.reqUrl,
+                        method: that.reqMethod,
+                        data: arguments[0] || {}
+                      },
+                      res: {
+                        status: this.status,
+                        statusText: this.statusText,
+                        response: this.response
+                      }
+                    }
+                  };
+                  handleError(message);
+                }
               }
             });
             that.xhrSend.apply(this, arguments);
@@ -2655,27 +2663,36 @@
         init: function init() {
           window.fetch = function (url, conf) {
             return FETCH.backup.apply(this, arguments).then(function (res) {
-              var message = _objectSpread({}, getBaseInfo(), {
-                type: FETCH_ERROR,
-                req: {
-                  url: url,
-                  method: conf && conf.method || 'GET',
-                  data: conf && conf.body || {}
-                },
-                res: {
-                  status: res.status,
-                  statusText: res.statusText // fetch 只能通过 res.json() 获取返回值且只能调用一次 此处不能获取返回值
-
-                }
-              });
-
               var isIgnore = ignore.filter(function (u) {
                 return url.indexOf(u) > -1;
               });
-              (!res.status || res.status >= 400) && !isIgnore.length && handleError(message);
+
+              if ((!res.status || res.status >= 400) && !isIgnore.length) {
+                var message = {
+                  type: FETCH_ERROR,
+                  desc: {
+                    req: {
+                      url: url,
+                      method: conf && conf.method || 'GET',
+                      data: conf && conf.body || {}
+                    },
+                    res: {
+                      status: res.status,
+                      statusText: res.statusText // fetch 只能通过 res.json() 获取返回值且只能调用一次 此处不能获取返回值
+
+                    }
+                  }
+                };
+                handleError(message);
+              }
+
               return res;
             }).catch(function (err) {
-              handleError(err);
+              var message = {
+                type: FETCH_ERROR,
+                desc: err
+              };
+              handleError(message);
             });
           };
         }

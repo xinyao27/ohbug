@@ -5,4 +5,4 @@ node_js:
 install:
 - yarn
 script:
-- yarn build && yarn build:compress && yarn test
+- yarn build && yarn test

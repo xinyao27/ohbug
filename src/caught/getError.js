@@ -5,6 +5,7 @@ import {
   PROMISE_ERROR,
   CAUGHT_ERROR,
   REPORT_INFO,
+  UNKNOWN_ERROR,
 } from '../constant';
 import handleError from '../handle/handleError';
 
@@ -102,7 +103,11 @@ function getError({ type, e }) {
     }
     return false;
   } catch (err) {
-    handleError(err);
+    const message = {
+      type: UNKNOWN_ERROR,
+      desc: 'unknown error',
+    };
+    handleError(message);
   }
 }
 

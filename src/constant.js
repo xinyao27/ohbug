@@ -11,3 +11,4 @@ export const PROMISE_ERROR = 'promiseError'; // promise 错误，可能包含 re
 export const AJAX_ERROR = 'ajaxError'; // ajax 错误
 export const FETCH_ERROR = 'fetchError'; // fetch 错误
 export const REPORT_INFO = 'reportInfo'; // 主动上报的信息
+export const UNKNOWN_ERROR = 'unknownError'; // 未知错误

@@ -2,7 +2,6 @@ import {
   AJAX_ERROR,
   FETCH_ERROR,
 } from '../constant';
-import getBaseInfo from '../info/getBaseInfo';
 import handleError from '../handle/handleError';
 
 /**
@@ -35,27 +34,28 @@ function getHttpRequestError() {
         };
 
         window.XMLHttpRequest.prototype.send = function () {
-          const message = {
-            ...getBaseInfo(),
-            type: AJAX_ERROR,
-            req: {
-              url: that.reqUrl,
-              method: that.reqMethod,
-              data: arguments[0] || {},
-            },
-            res: {
-              status: 0,
-              statusText: '',
-              response: null,
-            },
-          };
           this.addEventListener('readystatechange', function () {
             if (this.readyState === 4) {
-              message.res.response = this.response;
-              message.res.status = this.status;
-              message.res.statusText = this.statusText;
+              // 判断当前 http 请求是否在 ignore 中
               const isIgnore = ignore.filter(u => that.reqUrl.indexOf(u) > -1);
-              (!this.status || this.status >= 400) && !isIgnore.length && handleError(message);
+              if ((!this.status || this.status >= 400) && !isIgnore.length) {
+                const message = {
+                  type: AJAX_ERROR,
+                  desc: {
+                    req: {
+                      url: that.reqUrl,
+                      method: that.reqMethod,
+                      data: arguments[0] || {},
+                    },
+                    res: {
+                      status: this.status,
+                      statusText: this.statusText,
+                      response: this.response,
+                    },
+                  },
+                };
+                handleError(message);
+              }
             }
           });
 
@@ -74,26 +74,33 @@ function getHttpRequestError() {
           return (
             FETCH.backup.apply(this, arguments)
               .then((res) => {
-                const message = {
-                  ...getBaseInfo(),
-                  type: FETCH_ERROR,
-                  req: {
-                    url,
-                    method: (conf && conf.method) || 'GET',
-                    data: (conf && conf.body) || {},
-                  },
-                  res: {
-                    status: res.status,
-                    statusText: res.statusText,
-                    // fetch 只能通过 res.json() 获取返回值且只能调用一次 此处不能获取返回值
-                  },
-                };
                 const isIgnore = ignore.filter(u => url.indexOf(u) > -1);
-                (!res.status || res.status >= 400) && !isIgnore.length && handleError(message);
+                if ((!res.status || res.status >= 400) && !isIgnore.length) {
+                  const message = {
+                    type: FETCH_ERROR,
+                    desc: {
+                      req: {
+                        url,
+                        method: (conf && conf.method) || 'GET',
+                        data: (conf && conf.body) || {},
+                      },
+                      res: {
+                        status: res.status,
+                        statusText: res.statusText,
+                        // fetch 只能通过 res.json() 获取返回值且只能调用一次 此处不能获取返回值
+                      },
+                    },
+                  };
+                  handleError(message);
+                }
                 return res;
               })
               .catch((err) => {
-                handleError(err);
+                const message = {
+                  type: FETCH_ERROR,
+                  desc: err,
+                };
+                handleError(message);
               })
           );
         };
