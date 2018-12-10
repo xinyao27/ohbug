@@ -2313,7 +2313,7 @@
       style: 'background: #d9634d; color: #fff; padding: 2px 4px; border-radius: 2px'
     }];
     list.forEach(function (item) {
-      type === item.type && console.log("%c".concat(item.msg), item.style, info); // eslint-disable-line
+      type === item.type && console[item.msg]("%c".concat(item.msg), item.style, info); // eslint-disable-line
     });
   }
 
@@ -2357,7 +2357,7 @@
 
   var request = function request(delay) {
     return debounce(function () {
-      print(errorList);
+      print(errorList, 0);
       report(errorList);
     }, delay).call();
   };

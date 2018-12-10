@@ -31,7 +31,7 @@ function print(info, type = 2) {
     },
   ];
   list.forEach((item) => {
-    type === item.type && console.log(`%c${item.msg}`, item.style, info);// eslint-disable-line
+    type === item.type && console[item.msg](`%c${item.msg}`, item.style, info);// eslint-disable-line
   });
 }
 

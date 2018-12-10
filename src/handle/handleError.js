@@ -8,7 +8,7 @@ export const errorList = [];
 
 // 发生错误一段时间后发送请求 防抖控制指定时间内只发送一次请求
 const request = delay => debounce(() => {
-  print(errorList);
+  print(errorList, 0);
   report(errorList);
 }, delay).call();
 
