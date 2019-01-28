@@ -56,6 +56,8 @@
 
   var FETCH_ERROR = 'fetchError'; // fetch 错误
 
+  var WEBSOCKET_ERROR = 'websocketError'; // websocket 错误
+
   var REPORT_INFO = 'reportInfo'; // 主动上报的信息
 
   var UNKNOWN_ERROR = 'unknownError'; // 未知错误
@@ -2594,7 +2596,7 @@
 
   /**
    * getHttpRequestError
-   * ajax/fetch Error
+   * ajax/fetch/websocket Error
    *
    * @private
    */
@@ -2605,21 +2607,17 @@
 
     if (window.XMLHttpRequest) {
       var AJAX = {
-        // 记录请求的 url
-        reqUrl: '',
-        // 记录请求的方法
-        reqMethod: '',
-        // 保存原生的 open 方法
-        xhrOpen: window.XMLHttpRequest.prototype.open,
-        // 保存原生的 send 方法
-        xhrSend: window.XMLHttpRequest.prototype.send,
+        url: '',
+        method: '',
+        open: window.XMLHttpRequest.prototype.open,
+        send: window.XMLHttpRequest.prototype.send,
         init: function init() {
           var that = this;
 
           window.XMLHttpRequest.prototype.open = function () {
-            that.reqUrl = arguments[1];
-            that.reqMethod = arguments[0];
-            that.xhrOpen.apply(this, arguments);
+            that.url = arguments[1];
+            that.method = arguments[0];
+            that.open.apply(this, arguments);
           };
 
           window.XMLHttpRequest.prototype.send = function () {
@@ -2627,7 +2625,7 @@
               if (this.readyState === 4) {
                 // 判断当前 http 请求是否在 ignore 中
                 var isIgnore = ignore.filter(function (u) {
-                  return that.reqUrl.indexOf(u) > -1;
+                  return that.url.indexOf(u) > -1;
                 });
 
                 if ((!this.status || this.status >= 400) && !isIgnore.length) {
@@ -2635,8 +2633,8 @@
                     type: AJAX_ERROR,
                     desc: {
                       req: {
-                        url: that.reqUrl,
-                        method: that.reqMethod,
+                        url: that.url,
+                        method: that.method,
                         data: arguments[0] || {}
                       },
                       res: {
@@ -2650,7 +2648,7 @@
                 }
               }
             });
-            that.xhrSend.apply(this, arguments);
+            that.send.apply(this, arguments);
           };
         }
       };
@@ -2698,6 +2696,36 @@
         }
       };
       FETCH.init();
+    }
+
+    if (window.WebSocket) {
+      var WEBSOCKET = {
+        url: '',
+        backup: Object.getOwnPropertyDescriptor(window.WebSocket.prototype, 'onerror'),
+        init: function init() {
+          var that = this;
+          Object.defineProperty(window.WebSocket.prototype, 'onerror', {
+            set: function set() {
+              try {
+                var arg = arguments[0];
+                that.backup.set.apply(this, [function (e) {
+                  var message = {
+                    type: WEBSOCKET_ERROR,
+                    desc: {
+                      url: e.target.url
+                    }
+                  };
+                  handleError(message);
+                  arg.apply(this, arguments);
+                }]);
+              } catch (e) {
+                return that.backup.set.apply(this, arguments);
+              }
+            }
+          });
+        }
+      };
+      WEBSOCKET.init();
     }
   }
 

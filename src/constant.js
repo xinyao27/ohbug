@@ -10,5 +10,6 @@ export const GRAMMAR_ERROR = 'grammarError'; // 语法错误
 export const PROMISE_ERROR = 'promiseError'; // promise 错误，可能包含 render 等错误
 export const AJAX_ERROR = 'ajaxError'; // ajax 错误
 export const FETCH_ERROR = 'fetchError'; // fetch 错误
+export const WEBSOCKET_ERROR = 'websocketError'; // websocket 错误
 export const REPORT_INFO = 'reportInfo'; // 主动上报的信息
 export const UNKNOWN_ERROR = 'unknownError'; // 未知错误
