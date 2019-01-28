@@ -1,3 +1,7 @@
+# [0.2.0](https://github.com/chenyueban/ohbug/compare/v0.1.8...v0.2.0) (2019-01-28)
+
+
+
 ## [0.1.8](https://github.com/chenyueban/ohbug/compare/v0.1.7...v0.1.8) (2018-12-28)
 
 
