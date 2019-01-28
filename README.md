@@ -38,7 +38,7 @@
 页面加载完成后上报
 
 ## Todo
-- [ ] 捕获websocket错误
+- [x] 捕获websocket错误
 - [ ] 设置采集率
 - [ ] sourcemap定位压缩代码具体错误位置
 - [x] 页面性能监控
@@ -252,6 +252,7 @@ class Test extends React.Component {
 | promiseError | promise 错误 |
 | ajaxError | ajax 错误 |
 | fetchError | fetch 错误 |
+| websocketError | websocket 错误 |
 | reportInfo | 主动上报的信息 |
 
 ## 性能信息类型
