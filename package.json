@@ -1,6 +1,6 @@
 {
   "name": "ohbug",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "js caught and report error",
   "main": "dist/ohbug.min.js",
   "scripts": {
