@@ -173,7 +173,7 @@ Ohbug.init({
 | :------: | :------: | :------: | :------: |
 | report | 上传函数 | function | null |
 | others | 自定义信息 | object | null |
-| enabledDev | 开发环境下上传 (目前是判断当前 url 中是否含有 `127.0.0.1` / `localhost` 确定是否为本地) | boolean | false |
+| enabledDev | 开发环境下上传 (默认查看当前 url 中是否含有 `127.0.0.1` / `localhost` ，若传入数组则会遍历数组内每一项 url 与当前 url 是否匹配，匹配则是开发环境) | boolean / string[] | false |
 | | 以下为错误信息上报相关配置 | | |
 | error | 是否上报错误信息 | boolean | true |
 | maxError | 发送日志请求连续出错的最大次数 超过则不再发送请求 | number | 10 | 

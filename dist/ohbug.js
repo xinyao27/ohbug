@@ -2349,6 +2349,13 @@
         if (config && config.enabledDev && config.report) {
           config.report(data);
         }
+      } else if (config && Array.isArray(config.enabledDev)) {
+        config.enabledDev.forEach(function (v) {
+          if (window.location.host && v.indexOf(window.location.host) > -1) {
+            config.report(data);
+            return true;
+          }
+        });
       } else {
         config && config.report && config.report(data);
       }
