@@ -5,6 +5,8 @@
 [![npm](https://img.shields.io/npm/v/ohbug.svg)](https://www.npmjs.com/package/ohbug)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/chenyueban/ohbug/blob/master/LICENSE)
 
+## 推荐使用完全重写后的 [ohbug](https://github.com/ohbug-org/ohbug)，本项目已经废弃
+
 ## 简介
 
 通过监听/主动捕获 `error` 以及性能信息，获取相关信息后执行特定操作(数据上传记录等)。
